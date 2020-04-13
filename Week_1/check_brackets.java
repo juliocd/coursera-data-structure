@@ -35,36 +35,30 @@ class check_brackets {
         }
 
         String result = "Success";
-
         Stack<Bracket> opening_brackets_stack = new Stack<Bracket>();
         for (int position = 0; position < text.length(); ++position) {
             char next = text.charAt(position);
 
             if (next == '(' || next == '[' || next == '{') {
                 opening_brackets_stack.push(new Bracket(next, position));
-            }
-
-            if (next == ')' || next == ']' || next == '}') {
+            } else if (next == ')' || next == ']' || next == '}') {
                 if(opening_brackets_stack.isEmpty()){
-                    continue;
+                    result = ((Integer) (position + 1)).toString();
+                    break;
                 }
+
                 Bracket top = opening_brackets_stack.peek();
-                if(top.type == '(' && next == ')'){
-                    opening_brackets_stack.pop();
-                }else if(top.type == '[' && next == ']'){
-                    opening_brackets_stack.pop();
-                }else if(top.type == '{' && next == '}'){
+                if(top.Match(next)){
                     opening_brackets_stack.pop();
                 }else{
                     result = ((Integer) (position + 1)).toString();
                     break;
                 }
-
             }
         }
-        if(opening_brackets_stack.size() > 0){
-            System.out.println(((Integer) (opening_brackets_stack.peek().position + 1)).toString());
-            return;
+
+        if(opening_brackets_stack.size() > 0 && result == "Success"){
+            result = ((Integer) (opening_brackets_stack.get(opening_brackets_stack.size() - 1).position + 1)).toString();
         }
 
         System.out.println(result);

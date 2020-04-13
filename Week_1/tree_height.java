@@ -58,7 +58,6 @@ public class tree_height {
 			for (int i = 0; i < parent.length; i++) {
 				if(parent[i] == -1){
 					rootIndex = i;
-					nodeTree[rootIndex] = new Node();
 				}else if(nodeTree[parent[i]] == null){
 					nodeTree[parent[i]] = new Node();
 					nodeTree[parent[i]].addChildren(i);

@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 class Request {
@@ -26,15 +27,47 @@ class Buffer {
     public Buffer(int size) {
         this.size_ = size;
         this.finish_time_ = new ArrayList<Integer>();
+        this.last_output_ = -1;
     }
 
     public Response Process(Request request) {
-        // write your code here
-        return new Response(false, -1);
+        if(this.size_ == 0){
+            return new Response(true, -1);
+        }
+
+        // Remove completed process from buffer
+        List<Integer> indexToRemove = new ArrayList<Integer>();
+        for(int i = 0; i < this.finish_time_.size(); i++){
+            if(this.finish_time_.get(i) <= request.arrival_time){
+                indexToRemove.add(i);
+            }else{
+                break;
+            }
+        }
+        for(int k : indexToRemove){
+            this.finish_time_.remove(k);
+        }
+
+        // Add new request to buffer
+        if(this.finish_time_.size() < this.size_){
+            int processTime = (this.last_output_ == -1 || this.last_output_ < request.arrival_time) ? request.arrival_time : this.last_output_;
+            if(request.process_time > 0){
+                if(this.last_output_ > 0 && processTime <= this.last_output_){
+                    this.last_output_ = this.last_output_ + request.process_time;
+                }else{
+                    this.last_output_ = request.process_time;
+                }
+            }
+            this.finish_time_.add(processTime + request.process_time);
+            return new Response(false, processTime);
+        }else{
+            return new Response(true, -1);
+        }
     }
 
     private int size_;
     private ArrayList<Integer> finish_time_;
+    private int last_output_;
 }
 
 class process_packages {
