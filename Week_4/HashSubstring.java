@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -8,6 +7,8 @@ public class HashSubstring {
 
     private static FastScanner in;
     private static PrintWriter out;
+    private static int p = 10000019;
+    private static int x = 223344;
 
     public static void main(String[] args) throws IOException {
         in = new FastScanner();
@@ -30,21 +31,58 @@ public class HashSubstring {
     }
 
     private static List<Integer> getOccurrences(Data input) {
-        String s = input.pattern, t = input.text;
-        int m = s.length(), n = t.length();
-        List<Integer> occurrences = new ArrayList<Integer>();
-        for (int i = 0; i + m <= n; ++i) {
-	    boolean equal = true;
-	    for (int j = 0; j < m; ++j) {
-		if (s.charAt(j) != t.charAt(i + j)) {
-		     equal = false;
- 		    break;
-		}
-	    }
-            if (equal)
-                occurrences.add(i);
-	}
-        return occurrences;
+        String P = input.pattern, T = input.text;
+        List<Integer> result = new ArrayList<Integer>();
+        int tLength = T.length(), pLength = P.length();
+
+        // Get poly hashes
+        long pHash = PolyHash(P);
+
+        // Precompute hashes
+        Long[] H = PrecomputeHashes(T, pLength);
+
+        // Comapare hashes
+        for(int i = 0; i <= (tLength - pLength); i++){
+            if(pHash != H[i]){
+                continue;
+            }else{
+                if(AreEqual(T.substring(i, i + pLength), P)){
+                    result.add(i);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private static Boolean AreEqual(String S1, String S2){
+        return S1.equals(S2);
+    }
+
+    private static long PolyHash(String P){
+        long hash = 0;
+        Integer pLength = P.length();
+        for (Integer i = pLength - 1; i >= 0; i--){
+            hash = (hash * x + P.charAt(i)) % p;
+        }
+
+        return hash;
+    }
+
+    private static Long[] PrecomputeHashes(String T, Integer pLength){
+        int tLength = T.length();
+        Long[] H = new Long[tLength - pLength + 1];
+        String S = T.substring(tLength - pLength, tLength);
+        H[tLength - pLength] = PolyHash(S);
+        long y = 1;
+        for(int i = 1; i <= pLength; i++){
+            y = (y * x) % p;
+        }
+        for(int i = (tLength - pLength - 1); i >= 0; i--){
+            H[i] = (x*H[i + 1] + T.charAt(i) - y*T.charAt(i + pLength)) % p;
+        }
+
+        return H;
     }
 
     static class Data {
