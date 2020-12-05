@@ -51,6 +51,16 @@ public class PhoneBook {
         HashSet<Contact> chainContacts = phonebookHash[hashValue];
         Contact newContact = new Contact(query.name, query.number);
 
+        if(!chainContacts.isEmpty()){
+            for(Contact item: chainContacts){  
+                if(item.number == query.number){
+                    chainContacts.remove(item);
+                    phonebookHash[hashValue] = chainContacts;
+                    break;
+                }
+            }
+        }
+
         chainContacts.add(newContact);
         phonebookHash[hashValue] = chainContacts;
     }

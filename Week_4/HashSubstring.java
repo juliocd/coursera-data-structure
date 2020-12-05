@@ -7,8 +7,8 @@ public class HashSubstring {
 
     private static FastScanner in;
     private static PrintWriter out;
-    private static int p = 10000019;
-    private static int x = 223344;
+    private static int p = 1000000007;
+    private static int x = 236;
 
     public static void main(String[] args) throws IOException {
         in = new FastScanner();
@@ -79,7 +79,8 @@ public class HashSubstring {
             y = (y * x) % p;
         }
         for(int i = (tLength - pLength - 1); i >= 0; i--){
-            H[i] = (x*H[i + 1] + T.charAt(i) - y*T.charAt(i + pLength)) % p;
+            long hashValue = x*H[i + 1] + T.charAt(i) - y*T.charAt(i + pLength);
+            H[i] = hashValue > 0 ? (hashValue % p) : ((hashValue % p) + p) % p;
         }
 
         return H;
